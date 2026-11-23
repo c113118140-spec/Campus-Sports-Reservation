@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>校園運動場地預約系統</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="demo-banner">⚠️ 單一瀏覽器示範版本：資料僅儲存在本機瀏覽器 localStorage，無真正的使用者驗證，也不會與其他裝置或使用者同步。</div>
+
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <button class="brand" data-nav="home" aria-label="回到首頁">🏟️ <span>校園運動場地預約系統</span></button>
+    <button class="menu-btn" id="menuBtn" aria-label="開啟選單" aria-expanded="false">☰</button>
+    <nav id="mainNav" class="nav">
+      <button data-nav="home">🏠 首頁</button>
+      <button data-nav="facilities">📍 場地清單</button>
+      <button data-nav="book">📅 場地預約</button>
+      <button data-nav="mine">📋 我的預約</button>
+      <button data-nav="admin">🛠️ 管理員</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- 首頁 -->
+  <section data-view="home" class="view">
+    <div class="hero">
+      <div>
+        <h1>輕鬆預約校園運動場地</h1>
+        <p>線上查詢籃球場、羽球場、排球場的開放時段，選好日期與時間即可預約，並隨時查看或取消尚未開始的預約。</p>
+        <div class="hero-actions">
+          <button class="btn btn-light" data-nav="book">立即預約</button>
+          <button class="btn btn-outline" data-nav="facilities">查看場地</button>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">🏀🏸🏐</div>
+    </div>
+
+    <h2 class="sec-title">功能介紹</h2>
+    <div class="grid3">
+      <div class="card feature"><div class="ico">🔍</div><h3>場地查詢</h3><p>查看場地類型、位置、開放時段與指定日期的可預約情形。</p></div>
+      <div class="card feature"><div class="ico">✅</div><h3>即時衝突檢查</h3><p>相同場地、日期、時段不會重複預約，過去時段無法選擇。</p></div>
+      <div class="card feature"><div class="ico">↩️</div><h3>預約與取消</h3><p>查看個人紀錄，取消尚未開始的預約後立即釋放時段。</p></div>
+    </div>
+
+    <h2 class="sec-title">熱門場地</h2>
+    <div class="grid3" id="homeFacilities"></div>
+  </section>
+
+  <!-- 場地清單 -->
+  <section data-view="facilities" class="view">
+    <h2 class="sec-title">場地清單</h2>
+    <div class="card toolbar">
+      <label>場地類型
+        <select id="fType"><option value="">全部</option></select>
+      </label>
+      <label>查詢日期
+        <input type="date" id="fDate">
+      </label>
+    </div>
+    <div class="grid3" id="facilityList"></div>
+  </section>
+
+  <!-- 場地預約 -->
+  <section data-view="book" class="view">
+    <h2 class="sec-title">場地預約</h2>
+    <div class="card form">
+      <div class="row">
+        <label>預約人姓名
+          <input type="text" id="bName" maxlength="20" placeholder="例如：王小明" autocomplete="off">
+        </label>
+        <label>場地
+          <select id="bFacility"></select>
+        </label>
+        <label>日期
+          <input type="date" id="bDate">
+        </label>
+      </div>
+      <div class="legend">
+        <span><i class="dot free"></i>可預約</span>
+        <span><i class="dot booked"></i>已被預約</span>
+        <span><i class="dot past"></i>已過時段</span>
+        <span><i class="dot closed"></i>未開放</span>
+        <span><i class="dot sel"></i>已選擇</span>
+      </div>
+      <div id="slotGrid" class="slots"></div>
+      <div class="form-foot">
+        <div id="bSummary" class="summary">請選擇時段</div>
+        <button class="btn btn-primary" id="bSubmit">確認預約</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 我的預約 -->
+  <section data-view="mine" class="view">
+    <h2 class="sec-title">我的預約</h2>
+    <div class="card toolbar">
+      <label>預約人姓名
+        <input type="text" id="mName" maxlength="20" placeholder="輸入姓名查看預約" autocomplete="off">
+      </label>
+      <div class="chips" id="mDemoNames"></div>
+    </div>
+    <div id="myList" class="list"></div>
+  </section>
+
+  <!-- 管理員 -->
+  <section data-view="admin" class="view">
+    <h2 class="sec-title">管理員展示介面</h2>
+    <p class="note">此為展示用介面，未設置登入驗證，任何人皆可開啟。</p>
+
+    <div class="card">
+      <h3>場地管理</h3>
+      <div class="table-wrap"><table id="adminFacilities"></table></div>
+      <form id="addForm" class="row add-row">
+        <label>新增場地名稱<input type="text" id="aName" maxlength="20" placeholder="例如：網球場" required></label>
+        <label>類型<input type="text" id="aType" maxlength="10" placeholder="例如：網球" required></label>
+        <label>位置<input type="text" id="aLoc" maxlength="30" placeholder="例如：田徑場旁" required></label>
+        <label>開始(時)<input type="number" id="aOpen" min="0" max="23" value="8" required></label>
+        <label>結束(時)<input type="number" id="aClose" min="1" max="24" value="21" required></label>
+        <button class="btn btn-primary" type="submit">新增場地</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>預約狀況</h3>
+      <div class="toolbar flat">
+        <label>日期<input type="date" id="adDate"></label>
+      </div>
+      <div class="table-wrap"><table id="adminBoard"></table></div>
+      <h4>當日預約明細</h4>
+      <div id="adminDetail" class="list"></div>
+    </div>
+
+    <div class="card">
+      <h3>示範資料</h3>
+      <p class="note">重設後將清除本機所有預約與場地修改，並重新建立示範資料。</p>
+      <button class="btn btn-danger" id="resetBtn">重設示範資料</button>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">校園運動場地預約系統｜軟體工程期末專題示範版｜王昱翔、陳政佑、蔡哲恩、巫亭叡</footer>
+
+<!-- 確認對話框 -->
+<dialog id="dlg">
+  <form method="dialog" class="dlg-in">
+    <h3 id="dlgTitle"></h3>
+    <div id="dlgBody"></div>
+    <div class="dlg-actions">
+      <button class="btn btn-ghost" value="no" id="dlgNo">返回</button>
+      <button class="btn btn-primary" value="yes" id="dlgYes">確認</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="js/store.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
